@@ -15,9 +15,16 @@
 ```
 
 
-## Install Dependencies
+## Case1: Create a Conda Environment
 
 ```bash
+conda env create -f environment.yml
+```
+
+## Case2: Install Dependencies
+```bash
+conda activate qwen-env
+
 pip install -r requirements.txt
 ```
 
