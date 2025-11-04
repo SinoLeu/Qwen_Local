@@ -36,3 +36,17 @@ pip install -r requirements.txt
    streamlit run chatbot_client.py
    ```
 4. Open your browser and go to `http://localhost:8501` to use the chat interface.
+
+## Note 
+> The Qwen-4b model must use GPU deployment. Please ensure that your local machine has a compatible GPU and the necessary CUDA drivers installed.
+
+## Development Environment
+- Python 3.8+
+- Streamlit
+- FastAPI
+- Uvicorn
+- Qwen Model SDK
+- RTX5060Ti GPU with 16GB VRAM
+
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
