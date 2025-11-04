@@ -10,8 +10,8 @@ from html import escape
 from audio_recorder_streamlit import audio_recorder
 
 # 后端地址（请根据实际部署修改）
-BACKEND_URL = "http://172.20.10.3:5000/v1/chat/completions"
-TRANSCRIBE_URL = "http://172.20.10.3:5001/transcribe"
+BACKEND_URL = "http://127.0.0.1:5000/v1/chat/completions"
+TRANSCRIBE_URL = "http://127.0.0.1:5001/transcribe"
 
 
 
@@ -42,6 +42,7 @@ with st.sidebar:
 #     index=2  # 默认 2048
 # )
 
+## 增加一个
 
 # 显示历史消息
 for msg in st.session_state.messages:
