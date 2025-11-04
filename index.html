@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>安普机器人-聊天助手</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22 fill=%22%231A73E8%22>Q</text></svg>">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #f9fbfd 0%, #eef4ff 100%);
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(58, 108, 217, 0.15);
+      display: flex;
+      flex-direction: column;
+      height: 92vh;
+      overflow: hidden;
+      border: 1px solid #e8eef9;
+    }
+
+    /* Logo Header */
+    .header {
+      padding: 16px 20px;
+      background: #1A73E8;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo {
+      width: 32px;
+      height: 32px;
+      background: white;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #1A73E8;
+      font-size: 20px;
+    }
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      background: #fafcff;
+    }
+    .message {
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      border-radius: 18px;
+      max-width: 85%;
+      word-wrap: break-word;
+      line-height: 1.6;
+      font-size: 15px;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .user {
+      background: #E3F2FD;
+      color: #1A73E8;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .assistant {
+      background: #f5f8ff;
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      border: 1px solid #eef4ff;
+    }
+    .input-area {
+      display: flex;
+      padding: 16px;
+      background: white;
+      border-top: 1px solid #eef4ff;
+    }
+    #user-input {
+      flex: 1;
+      padding: 12px 18px;
+      border: 1px solid #dde5f5;
+      border-radius: 28px;
+      outline: none;
+      font-size: 15px;
+      background: #fafcff;
+      transition: border-color 0.2s;
+    }
+    #user-input:focus {
+      border-color: #1A73E8;
+      box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+    }
+    #send-btn {
+      width: 90px;
+      margin-left: 12px;
+      padding: 12px;
+      background: #1A73E8;
+      color: white;
+      border: none;
+      border-radius: 28px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    #send-btn:hover:not(:disabled) {
+      background: #0d62d0;
+    }
+    #send-btn:disabled {
+      background: #c2d4f7;
+      cursor: not-allowed;
+    }
+
+    /* 滚动条美化 */
+    .chat-box::-webkit-scrollbar {
+      width: 6px;
+    }
+    .chat-box::-webkit-scrollbar-thumb {
+      background: #cbd5f0;
+      border-radius: 3px;
+    }
+    .input-area {
+      display: flex;
+      align-items: center;
+      gap: 8px; /* label 和 select 之间的间距 */
+      margin: 12px 0;
+    }
+
+    .input-area label {
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .input-area select {
+      /* 基础样式 */
+      padding: 6px 12px;
+      font-size: 14px;
+      border: 1px solid #cbd5e1; /* 柔和灰色边框 */
+      border-radius: 8px;
+      background-color: #ffffff;
+      color: #2d3748;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      /* 移除原生下拉箭头（可选，但需注意可访问性） */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+
+      /* 保证在 Safari 等浏览器中宽度合理 */
+      min-width: 80px;
+    }
+
+    /* 自定义下拉箭头（使用伪元素） */
+    .input-area select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'%3e%3cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+      padding-right: 36px; /* 为箭头留空间 */
+    }
+
+    /* 悬停效果 */
+    .input-area select:hover {
+      border-color: #94a3b8;
+    }
+
+    /* 聚焦效果 */
+    .input-area select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    /* 禁用状态 */
+    .input-area select:disabled {
+      background-color: #f8fafc;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .input-area select option {
+      padding: 8px 12px;
+      font-size: 14px;
+      color: #2d3748;
+      background-color: #ffffff;
+    }
+
+    /* 已选中项（部分浏览器支持） */
+    .input-area select option:checked {
+      background-color: #dbeafe;
+      color: #1d4ed8;
+    }
+    .btn-clear {
+      /* 基础布局 */
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      /* 颜色方案：柔和警示色（因“清除”是破坏性操作） */
+      color: #dc2626;           /* 红色文字 */
+      background-color: #fee2e2; /* 浅红背景 */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+      /* 禁用默认焦点 outline，改用更美观的 focus ring */
+      outline: none;
+    }
+
+    /* 悬停效果 */
+    .btn-clear:hover {
+      background-color: #fecaca;
+      color: #b91c1c;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 点击/激活状态 */
+    .btn-clear:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 聚焦时的可访问性高亮 */
+    .btn-clear:focus-visible {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(220, 38, 38, 0.3);
+    }
+
+    /* 禁用状态（可选） */
+    .btn-clear:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <div class="header">
+      <div class="logo">Q</div>
+      <h1>安普机器人-聊天助手</h1>
+    </div>
+    <!-- 加一个下拉框可以选择最长回复长度 -->
+    <!-- 新增一个清除当前对话按钮 -->
+    <button type="button" id="clear-btn" class="btn-clear" onclick="clearChat()">清除当前对话</button>
+<div class="input-area">
+  <label for="max-tokens">最长回复长度:</label>
+  <select id="max-tokens">
+    <option value="512">512</option>
+    <option value="1024">1024</option>
+    <option value="2048" selected>2048</option>
+    <option value="4096">4096</option>
+  </select>
+</div>
+    <div class="chat-box" id="chatBox">
+      <div class="message assistant">你好！我是 Qwen3-Max，通义千问系列大模型，可以回答问题、创作文字、编程等。有什么我可以帮你的吗？</div>
+    </div>
+    <!-- <div class="input-area">
+      <input type="text" id="user-input" placeholder="输入你的问题..." />
+      <button id="send-btn" onclick="sendMessage()">发送</button>
+    </div> -->
+    <div class="input-area">
+  <input 
+    type="text" 
+    id="user-input" 
+    placeholder="输入你的问题..." 
+    onkeydown="if(event.key === 'Enter') sendMessage()" 
+  />
+  <button id="send-btn" onclick="sendMessage()">发送</button>
+</div>
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
+  <script>
+
+    const chatBox = document.getElementById('chatBox');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    // 配置 marked 支持 GFM（包括 # 标题、- 列表、代码块、表格等）
+    marked.setOptions({
+      gfm: true,
+      breaks: true,
+      smartypants: false,
+    });
+
+    function renderMarkdown(text) {
+      const dirty = marked.parse(text);
+      const clean = DOMPurify.sanitize(dirty);
+      return clean;
+    }
+    // 存储完整对话历史（用于上下文）
+    let conversationHistory = [];
+
+    function addMessage(role, content) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${role}`;
+      msgDiv.textContent = content;
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight; // 自动滚动到底部
+    }
+
+    function fixMarkdown(text) {
+      // 将行首的 "---### " 替换为分隔线 + 三级标题（情况二）
+      // 先尝试是否希望保留分隔线
+      text = text.replace(/^---###\s+(.*)$/gm, '---\n\n### $1');
+
+      
+      return text;
+    }
+
+    function clearChat() {
+      chatBox.innerHTML = '';
+      conversationHistory = [];
+      addMessage('assistant', '你好！我是 Qwen3-Max，通义千问系列大模型，可以回答问题、创作文字、编程等。有什么我可以帮你的吗？');
+    }
+    // 预处理函数：从 chunk 中提取有效文本，去除 'data: ' 和空行
+    function cleanChunk(chunk) {
+      // 如果是<think> 请忽略
+      if (chunk.includes('<think>') || chunk.includes('</think>')) {
+        return '';
+      }
+      
+      return chunk
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.startsWith('data: '))
+        .map(line => line.substring(6))
+        .join('');
+    }
+    function getMaxTokens() {
+      const select = document.getElementById('max-tokens');
+      return parseInt(select.value, 10);
+    }
+
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      // 清空输入框并禁用按钮
+      userInput.value = '';
+      sendBtn.disabled = true;
+
+      // 添加用户消息
+      addMessage('user', text);
+      conversationHistory.push({ role: 'user', content: text });
+      // 构造完整 prompt（Qwen3 推荐格式）
+      let prompt = "";
+      for (const msg of conversationHistory) {
+        if (msg.role === 'user') {
+          prompt += `<|im_start|>user\n${msg.content}\n<|im_end|>\n`;
+        } else {
+          prompt += `<|im_start|>assistant\n${msg.content}\n<|im_end|>\n`;
+        }
+      }
+        prompt += `<|im_start|>assistant\n`;
+        // 发送请求到本地 Qwen3-Max 服务
+        const response = await fetch('http://172.20.10.3:8000/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            prompt: `${prompt} /no_think`,
+            max_new_tokens: getMaxTokens(),
+            top_p: 0.7,
+            stream: true
+          })
+        });
+        if (!response.ok) {
+          addMessage('assistant', '抱歉，出现了一个错误。');
+          sendBtn.disabled = false;
+          return;
+        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let assistantMessage = '';
+        addMessage('assistant', ''); // 先添加一个空的助手消息
+        const assistantDiv = chatBox.lastChild; // 获取刚添加的助手消息元素
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          assistantMessage += cleanChunk(chunk);
+          assistantDiv.textContent = assistantMessage; // 实时更新助手消息内容
+          chatBox.scrollTop = chatBox.scrollHeight; // 自动滚动到底部
+        }
+        // conversationHistory.push({ role: 'assistant', content: assistantMessage });
+        // sendBtn.disabled = false;
+        // ✅ 关键：完整接收后，用 Markdown 渲染
+        // 支持markdown格式
+        const html = renderMarkdown(assistantMessage);
+        assistantDiv.innerHTML = html;
+
+        conversationHistory.push({ role: 'assistant', content: assistantMessage });
+        sendBtn.disabled = false;
+    }
+    
+  </script>
+</body>
+</html>
