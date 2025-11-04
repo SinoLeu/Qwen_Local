@@ -152,3 +152,7 @@ def TRSF(self,enable):
         print("rtn is ", rtn)
         rtn = robot.MoveJ(endjointPos, 0, 0, enddescPose)
         print("rtn is ", rtn)
+        
+
+# git config --global user.name "sino"  # 比如 "Zhang San"，可自定义
+# git config --global user.email "1349087341@qq.com"  # 比如 "zhangsan@example.com"，建议用常用邮箱
