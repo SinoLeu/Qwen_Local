@@ -40,7 +40,7 @@ pip install -r requirements.txt
    ```
 3. Start the front-end interface:
 ```bash
-   streamlit run chatbot_client.py
+   streamlit run chatbot_clientv2.py
    ```
 4. Open your browser and go to `http://localhost:8501` to use the chat interface.
 
