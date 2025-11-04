@@ -13,8 +13,6 @@ from audio_recorder_streamlit import audio_recorder
 BACKEND_URL = "http://127.0.0.1:5000/v1/chat/completions"
 TRANSCRIBE_URL = "http://127.0.0.1:5001/transcribe"
 
-
-
 # 初始化会话状态
 if "messages" not in st.session_state:
     st.session_state.messages = [
@@ -35,12 +33,6 @@ with st.sidebar:
         ]
         st.rerun()
 
-# 最长回复长度选择
-# max_tokens = st.sidebar.selectbox(
-#     "最长回复长度",
-#     options=[512, 1024, 2048, 4096],
-#     index=2  # 默认 2048
-# )
 
 ## 增加一个
 
